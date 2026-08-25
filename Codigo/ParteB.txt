@@ -27,6 +27,359 @@ start:
 
 	main_loop:
 
+        loop_cero:
 
+		; Cero
+		sbi PORTD, PD0
+		sbi PORTD, PD1
+		sbi PORTD, PD2
+		sbi PORTD, PD3
+		sbi PORTC, PC0
+		sbi PORTC, PC1
+		cbi PORTC, PC2
+		
+
+		sbis PINB, PB1
+		rjmp loop_cero
+
+
+		sbis PINB, PB0
+		rjmp loop_uno
+
+
+		sbis PINB, PB2
+		rjmp loop_quince
+
+		rjmp loop_cero
+
+		loop_uno:
+
+		; Uno
+		cbi PORTD, PD0
+		sbi PORTD, PD1
+		sbi PORTD, PD2
+		cbi PORTD, PD3
+		cbi PORTC, PC0
+		cbi PORTC, PC1
+		cbi PORTC, PC2
+
+		sbis PINB, PB1
+		rjmp loop_cero
+
+		sbis PINB, PB0
+		rjmp loop_dos
+
+		sbis PINB, PB2
+		rjmp loop_cero
+
+		rjmp loop_uno
+
+		loop_dos:
+
+		; Dos
+		sbi PORTD, PD0
+		sbi PORTD, PD1
+		cbi PORTD, PD2
+		sbi PORTD, PD3
+		sbi PORTC, PC0
+		cbi PORTC, PC1
+		sbi PORTC, PC2
+
+		sbis PINB, PB1
+		rjmp loop_cero
+
+		sbis PINB, PB0
+		rjmp loop_tres
+
+		sbis PINB, PB2
+		rjmp loop_uno
+
+		rjmp loop_dos
+
+		loop_tres:
+
+		; Tres
+		sbi PORTD, PD0
+		sbi PORTD, PD1
+		sbi PORTD, PD2
+		sbi PORTD, PD3
+		cbi PORTC, PC0
+		cbi PORTC, PC1
+		sbi PORTC, PC2
+
+		sbis PINB, PB1
+		rjmp loop_cero
+
+		sbis PINB, PB0
+		rjmp loop_cuatro
+
+		sbis PINB, PB2
+		rjmp loop_dos
+
+		rjmp loop_tres
+
+		loop_cuatro:
+
+		; Cuatro
+		cbi PORTD, PD0
+		sbi PORTD, PD1
+		sbi PORTD, PD2
+		cbi PORTD, PD3
+		cbi PORTC, PC0
+		sbi PORTC, PC1
+		sbi PORTC, PC2
+
+		sbis PINB, PB1
+		rjmp loop_cero
+
+		sbis PINB, PB0
+		rjmp loop_cinco
+
+		sbis PINB, PB2
+		rjmp loop_tres
+
+		rjmp loop_cuatro
+
+		loop_cinco:
+
+		; Cinco
+		sbi PORTD, PD0
+		cbi PORTD, PD1
+		sbi PORTD, PD2
+		sbi PORTD, PD3
+		cbi PORTC, PC0
+		sbi PORTC, PC1
+		sbi PORTC, PC2
+
+		sbis PINB, PB1
+		rjmp loop_cero
+
+		sbis PINB, PB0
+		rjmp loop_seis
+
+		sbis PINB, PB2
+		rjmp loop_cuatro
+
+		rjmp loop_cinco
+
+		loop_seis:
+
+		; Seis
+		sbi PORTD, PD0
+		cbi PORTD, PD1
+		sbi PORTD, PD2
+		sbi PORTD, PD3
+		sbi PORTC, PC0
+		sbi PORTC, PC1
+		sbi PORTC, PC2
+
+		sbis PINB, PB1
+		rjmp loop_cero
+
+		sbis PINB, PB0
+		rjmp loop_siete
+
+		sbis PINB, PB2
+		rjmp loop_cinco
+
+		rjmp loop_seis
+
+		loop_siete:
+
+		; Siete
+		sbi PORTD, PD0
+		sbi PORTD, PD1
+		sbi PORTD, PD2
+		cbi PORTD, PD3
+		cbi PORTC, PC0
+		cbi PORTC, PC1
+		cbi PORTC, PC2
+
+		sbis PINB, PB1
+		rjmp loop_cero
+
+		sbis PINB, PB0
+		rjmp loop_ocho
+
+		sbis PINB, PB2
+		rjmp loop_seis
+
+		rjmp loop_siete
+
+		loop_ocho:
+
+		; Ocho
+		sbi PORTD, PD0
+		sbi PORTD, PD1
+		sbi PORTD, PD2
+		sbi PORTD, PD3
+		sbi PORTC, PC0
+		sbi PORTC, PC1
+		sbi PORTC, PC2
+
+		sbis PINB, PB1
+		rjmp loop_cero
+
+		sbis PINB, PB0
+		rjmp loop_nueve
+
+		sbis PINB, PB2
+		rjmp loop_siete
+
+		rjmp loop_ocho
+
+		loop_nueve:
+
+		; Nueve
+		sbi PORTD, PD0
+		sbi PORTD, PD1
+		sbi PORTD, PD2
+		sbi PORTD, PD3
+		cbi PORTC, PC0
+		sbi PORTC, PC1
+		sbi PORTC, PC2
+
+		sbis PINB, PB1
+		rjmp loop_cero
+		
+		sbis PINB, PB0
+		rjmp loop_diez
+
+		sbis PINB, PB2
+		rjmp loop_ocho
+
+		rjmp loop_nueve
+
+		loop_diez:
+
+		; Diez
+		sbi PORTD, PD0
+		sbi PORTD, PD1
+		sbi PORTD, PD2
+		cbi PORTD, PD3
+		sbi PORTC, PC0
+		sbi PORTC, PC1
+		sbi PORTC, PC2
+
+		sbis PINB, PB1
+		rjmp loop_cero
+
+		sbis PINB, PB0
+		rjmp loop_once
+
+		sbis PINB, PB2
+		rjmp loop_nueve
+
+		rjmp loop_diez
+
+		loop_once:
+
+		; Once
+		cbi PORTD, PD0
+		cbi PORTD, PD1
+		sbi PORTD, PD2
+		sbi PORTD, PD3
+		sbi PORTC, PC0
+		sbi PORTC, PC1
+		sbi PORTC, PC2
+
+		sbis PINB, PB1
+		rjmp loop_cero
+
+		sbis PINB, PB0
+		rjmp loop_doce
+
+		sbis PINB, PB2
+		rjmp loop_nueve
+
+		rjmp loop_once
+
+		loop_doce:
+
+		; Doce
+		sbi PORTD, PD0
+		cbi PORTD, PD1
+		cbi PORTD, PD2
+		sbi PORTD, PD3
+		sbi PORTC, PC0
+		sbi PORTC, PC1
+		cbi PORTC, PC2
+
+		sbis PINB, PB1
+		rjmp loop_cero
+
+		sbis PINB, PB0
+		rjmp loop_trece
+
+		sbis PINB, PB2
+		rjmp loop_diez
+
+		rjmp loop_doce
+
+		loop_trece:
+
+		; Trece
+		cbi PORTD, PD0
+		sbi PORTD, PD1
+		sbi PORTD, PD2
+		sbi PORTD, PD3
+		sbi PORTC, PC0
+		cbi PORTC, PC1
+		sbi PORTC, PC2
+
+		sbis PINB, PB1
+		rjmp loop_cero
+
+		sbis PINB, PB0
+		rjmp loop_catorce
+
+		sbis PINB, PB2
+		rjmp loop_doce
+
+		rjmp loop_trece
+
+		loop_catorce:
+
+		; Catorce
+		sbi PORTD, PD0
+		cbi PORTD, PD1
+		cbi PORTD, PD2
+		sbi PORTD, PD3
+		sbi PORTC, PC0
+		sbi PORTC, PC1
+		sbi PORTC, PC2
+
+		sbis PINB, PB1
+		rjmp loop_cero
+
+		sbis PINB, PB0
+		rjmp loop_quince
+
+		sbis PINB, PB2
+		rjmp loop_trece
+
+		rjmp loop_catorce
+
+		loop_quince:
+
+		; Quince
+		sbi PORTD, PD0
+		cbi PORTD, PD1
+		cbi PORTD, PD2
+		cbi PORTD, PD3
+		sbi PORTC, PC0
+		sbi PORTC, PC1
+		sbi PORTC, PC2
+
+		sbis PINB, PB1
+		rjmp loop_cero
+
+		sbis PINB, PB0
+		rjmp loop_cero
+
+		sbis PINB, PB2
+		rjmp loop_catorce
+
+		rjmp loop_quince
 
     rjmp main_loop
