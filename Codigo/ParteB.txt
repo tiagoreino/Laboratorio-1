@@ -1,0 +1,32 @@
+start:
+    .include "m2560def.inc"
+
+	; Le cambiamos nombre a los registros 16 y 17 para entradas y salidas
+	.def entradas = r16
+	.def salidas = r17
+
+	.cseg
+	.org 0x00
+ 
+
+	; PB0, PB1 y PB2 como entradas
+	ldi entradas, 0b00000000
+	out DDRB, entradas
+
+	; Pull-up internas en PB0, PB1 y PB2
+	ldi entradas, 0b00000111
+	out PORTB, entradas
+
+	; PD0-PD3 como salidas
+	ldi salidas, 0b00001111
+	out DDRD, salidas
+
+	; PC0-PC2 como salidas
+	ldi salidas, 0b00000111
+	out DDRC, salidas
+
+	main_loop:
+
+
+
+    rjmp main_loop
