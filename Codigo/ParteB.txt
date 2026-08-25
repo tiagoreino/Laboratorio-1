@@ -28,6 +28,8 @@ start:
 	main_loop:
 
         loop_cero:
+        sbrc r18, 0  
+		rcall confirmacion
 
 		; Cero
 		sbi PORTD, PD0
@@ -38,21 +40,27 @@ start:
 		sbi PORTC, PC1
 		cbi PORTC, PC2
 		
-
+        ; 312.5ns
+        sbis PINB, PB1
+		ori  r18, 0b00000001
 		sbis PINB, PB1
 		rjmp loop_cero
 
-
+        sbis PINB, PB0
+		ori  r18, 0b00000001
 		sbis PINB, PB0
 		rjmp loop_uno
 
-
+		sbis PINB, PB2
+		ori  r18, 0b00000001
 		sbis PINB, PB2
 		rjmp loop_quince
 
 		rjmp loop_cero
 
 		loop_uno:
+        sbrc r18, 0  
+		rcall confirmacion
 
 		; Uno
 		cbi PORTD, PD0
@@ -63,18 +71,26 @@ start:
 		cbi PORTC, PC1
 		cbi PORTC, PC2
 
+        sbis PINB, PB1
+		ori  r18, 0b00000001
 		sbis PINB, PB1
 		rjmp loop_cero
 
+        sbis PINB, PB0
+		ori  r18, 0b00000001
 		sbis PINB, PB0
 		rjmp loop_dos
 
+		sbis PINB, PB2
+		ori  r18, 0b00000001
 		sbis PINB, PB2
 		rjmp loop_cero
 
 		rjmp loop_uno
 
 		loop_dos:
+        sbrc r18, 0  
+		rcall confirmacion
 
 		; Dos
 		sbi PORTD, PD0
@@ -85,18 +101,26 @@ start:
 		cbi PORTC, PC1
 		sbi PORTC, PC2
 
+        sbis PINB, PB1
+		ori  r18, 0b00000001
 		sbis PINB, PB1
 		rjmp loop_cero
 
+        sbis PINB, PB0
+		ori  r18, 0b00000001
 		sbis PINB, PB0
 		rjmp loop_tres
 
+		sbis PINB, PB2
+		ori  r18, 0b00000001
 		sbis PINB, PB2
 		rjmp loop_uno
 
 		rjmp loop_dos
 
 		loop_tres:
+        sbrc r18, 0  
+		rcall confirmacion
 
 		; Tres
 		sbi PORTD, PD0
@@ -107,18 +131,26 @@ start:
 		cbi PORTC, PC1
 		sbi PORTC, PC2
 
+        sbis PINB, PB1
+		ori  r18, 0b00000001
 		sbis PINB, PB1
 		rjmp loop_cero
 
+        sbis PINB, PB0
+		ori  r18, 0b00000001
 		sbis PINB, PB0
 		rjmp loop_cuatro
 
+		sbis PINB, PB2
+		ori  r18, 0b00000001
 		sbis PINB, PB2
 		rjmp loop_dos
 
 		rjmp loop_tres
 
 		loop_cuatro:
+        sbrc r18, 0  
+		rcall confirmacion
 
 		; Cuatro
 		cbi PORTD, PD0
@@ -129,18 +161,26 @@ start:
 		sbi PORTC, PC1
 		sbi PORTC, PC2
 
+        sbis PINB, PB1
+		ori  r18, 0b00000001
 		sbis PINB, PB1
 		rjmp loop_cero
 
+        sbis PINB, PB0
+		ori  r18, 0b00000001
 		sbis PINB, PB0
 		rjmp loop_cinco
 
+		sbis PINB, PB2
+		ori  r18, 0b00000001
 		sbis PINB, PB2
 		rjmp loop_tres
 
 		rjmp loop_cuatro
 
 		loop_cinco:
+        sbrc r18, 0  
+		rcall confirmacion
 
 		; Cinco
 		sbi PORTD, PD0
@@ -151,18 +191,26 @@ start:
 		sbi PORTC, PC1
 		sbi PORTC, PC2
 
+        sbis PINB, PB1
+		ori  r18, 0b00000001
 		sbis PINB, PB1
 		rjmp loop_cero
 
+        sbis PINB, PB0
+		ori  r18, 0b00000001
 		sbis PINB, PB0
 		rjmp loop_seis
 
+		sbis PINB, PB2
+		ori  r18, 0b00000001
 		sbis PINB, PB2
 		rjmp loop_cuatro
 
 		rjmp loop_cinco
 
 		loop_seis:
+        sbrc r18, 0  
+		rcall confirmacion
 
 		; Seis
 		sbi PORTD, PD0
@@ -173,18 +221,26 @@ start:
 		sbi PORTC, PC1
 		sbi PORTC, PC2
 
+        sbis PINB, PB1
+		ori  r18, 0b00000001
 		sbis PINB, PB1
 		rjmp loop_cero
 
+        sbis PINB, PB0
+		ori  r18, 0b00000001
 		sbis PINB, PB0
 		rjmp loop_siete
 
+		sbis PINB, PB2
+		ori  r18, 0b00000001
 		sbis PINB, PB2
 		rjmp loop_cinco
 
 		rjmp loop_seis
 
 		loop_siete:
+        sbrc r18, 0  
+		rcall confirmacion
 
 		; Siete
 		sbi PORTD, PD0
@@ -195,18 +251,26 @@ start:
 		cbi PORTC, PC1
 		cbi PORTC, PC2
 
+        sbis PINB, PB1
+		ori  r18, 0b00000001
 		sbis PINB, PB1
 		rjmp loop_cero
 
+        sbis PINB, PB0
+		ori  r18, 0b00000001
 		sbis PINB, PB0
 		rjmp loop_ocho
 
+		sbis PINB, PB2
+		ori  r18, 0b00000001
 		sbis PINB, PB2
 		rjmp loop_seis
 
 		rjmp loop_siete
 
 		loop_ocho:
+        sbrc r18, 0  
+		rcall confirmacion
 
 		; Ocho
 		sbi PORTD, PD0
@@ -217,18 +281,26 @@ start:
 		sbi PORTC, PC1
 		sbi PORTC, PC2
 
+        sbis PINB, PB1
+		ori  r18, 0b00000001
 		sbis PINB, PB1
 		rjmp loop_cero
 
+        sbis PINB, PB0
+		ori  r18, 0b00000001
 		sbis PINB, PB0
 		rjmp loop_nueve
 
+		sbis PINB, PB2
+		ori  r18, 0b00000001
 		sbis PINB, PB2
 		rjmp loop_siete
 
 		rjmp loop_ocho
 
 		loop_nueve:
+        sbrc r18, 0  
+		rcall confirmacion
 
 		; Nueve
 		sbi PORTD, PD0
@@ -239,18 +311,26 @@ start:
 		sbi PORTC, PC1
 		sbi PORTC, PC2
 
+        sbis PINB, PB1
+		ori  r18, 0b00000001
 		sbis PINB, PB1
 		rjmp loop_cero
 		
+        sbis PINB, PB0
+		ori  r18, 0b00000001
 		sbis PINB, PB0
 		rjmp loop_diez
 
+		sbis PINB, PB2
+		ori  r18, 0b00000001
 		sbis PINB, PB2
 		rjmp loop_ocho
 
 		rjmp loop_nueve
 
 		loop_diez:
+        sbrc r18, 0  
+		rcall confirmacion
 
 		; Diez
 		sbi PORTD, PD0
@@ -261,18 +341,26 @@ start:
 		sbi PORTC, PC1
 		sbi PORTC, PC2
 
+        sbis PINB, PB1
+		ori  r18, 0b00000001
 		sbis PINB, PB1
 		rjmp loop_cero
 
+        sbis PINB, PB0
+		ori  r18, 0b00000001
 		sbis PINB, PB0
 		rjmp loop_once
 
+		sbis PINB, PB2
+		ori  r18, 0b00000001
 		sbis PINB, PB2
 		rjmp loop_nueve
 
 		rjmp loop_diez
 
 		loop_once:
+        sbrc r18, 0  
+		rcall confirmacion
 
 		; Once
 		cbi PORTD, PD0
@@ -283,18 +371,26 @@ start:
 		sbi PORTC, PC1
 		sbi PORTC, PC2
 
+        sbis PINB, PB1
+		ori  r18, 0b00000001
 		sbis PINB, PB1
 		rjmp loop_cero
 
+        sbis PINB, PB0
+		ori  r18, 0b00000001
 		sbis PINB, PB0
 		rjmp loop_doce
 
+		sbis PINB, PB2
+		ori  r18, 0b00000001
 		sbis PINB, PB2
 		rjmp loop_nueve
 
 		rjmp loop_once
 
 		loop_doce:
+        sbrc r18, 0  
+		rcall confirmacion
 
 		; Doce
 		sbi PORTD, PD0
@@ -305,18 +401,26 @@ start:
 		sbi PORTC, PC1
 		cbi PORTC, PC2
 
+        sbis PINB, PB1
+		ori  r18, 0b00000001
 		sbis PINB, PB1
 		rjmp loop_cero
 
+        sbis PINB, PB0
+		ori  r18, 0b00000001
 		sbis PINB, PB0
 		rjmp loop_trece
 
+		sbis PINB, PB2
+		ori  r18, 0b00000001
 		sbis PINB, PB2
 		rjmp loop_diez
 
 		rjmp loop_doce
 
 		loop_trece:
+        sbrc r18, 0  
+		rcall confirmacion
 
 		; Trece
 		cbi PORTD, PD0
@@ -327,18 +431,26 @@ start:
 		cbi PORTC, PC1
 		sbi PORTC, PC2
 
+        sbis PINB, PB1
+		ori  r18, 0b00000001
 		sbis PINB, PB1
 		rjmp loop_cero
 
+        sbis PINB, PB0
+		ori  r18, 0b00000001
 		sbis PINB, PB0
 		rjmp loop_catorce
 
+		sbis PINB, PB2
+		ori  r18, 0b00000001
 		sbis PINB, PB2
 		rjmp loop_doce
 
 		rjmp loop_trece
 
 		loop_catorce:
+        sbrc r18, 0  
+		rcall confirmacion
 
 		; Catorce
 		sbi PORTD, PD0
@@ -349,18 +461,26 @@ start:
 		sbi PORTC, PC1
 		sbi PORTC, PC2
 
+        sbis PINB, PB1
+		ori  r18, 0b00000001
 		sbis PINB, PB1
 		rjmp loop_cero
 
+        sbis PINB, PB0
+		ori  r18, 0b00000001
 		sbis PINB, PB0
 		rjmp loop_quince
 
+		sbis PINB, PB2
+		ori  r18, 0b00000001
 		sbis PINB, PB2
 		rjmp loop_trece
 
 		rjmp loop_catorce
 
 		loop_quince:
+        sbrc r18, 0  
+		rcall confirmacion
 
 		; Quince
 		sbi PORTD, PD0
@@ -371,15 +491,62 @@ start:
 		sbi PORTC, PC1
 		sbi PORTC, PC2
 
+        sbis PINB, PB1
+		ori  r18, 0b00000001
 		sbis PINB, PB1
 		rjmp loop_cero
 
+        sbis PINB, PB0
+		ori  r18, 0b00000001
 		sbis PINB, PB0
 		rjmp loop_cero
 
+		sbis PINB, PB2
+		ori  r18, 0b00000001
 		sbis PINB, PB2
 		rjmp loop_catorce
 
 		rjmp loop_quince
 
-    rjmp main_loop
+    rjmp main_loop 
+
+    	; 22.6 ms
+	delay:
+		ldi r20, 3
+		even_outer_db:
+			ldi r21, 200
+		outer_db:
+			ldi r22, 200
+		inner_db:
+			dec r22
+			brne inner_db
+			dec r21
+			brne outer_db
+			dec r20
+			brne even_outer_db
+			ret
+
+
+	debounce:
+		rcall delay
+
+		sbis PINB, PB0
+		rjmp debounce
+
+		sbis PINB, PB1
+		rjmp debounce
+
+		sbis PINB, PB2
+		rjmp debounce
+
+		ret
+
+
+	confirmacion:
+		rcall delay
+
+		rcall debounce
+
+		andi r18, 0b11111110
+
+		ret
