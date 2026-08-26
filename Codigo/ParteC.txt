@@ -1,0 +1,293 @@
+.include "m2560def.inc"
+.cseg
+.org 0x00
+
+main:
+; Configuro Port A para LEDs
+    ldi r16, 0xFF ; carga unos
+    out DDRA, r16; carga los pines como salida (de A)
+
+; Secuencias
+Sec_1: ; secuencia: -> prende y apaga ... prende y apaga
+    ldi r16, 0x80 ; Posición 7
+    out PORTA, r16; Prende posición 7
+    rcall delay
+
+    ldi r16, 0x40
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x20
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x10
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x08
+    out PORTA, r16
+    rcall delay
+    
+    ldi r16, 0x04
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x02
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x01
+    out PORTA, r16
+    rcall delay
+    
+    rjmp
+
+Sec_2:
+    ldi r16, 0c0
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x60
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x30
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x18
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x0c
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x06
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x03
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x81
+    out PORTA, r16
+    rcall delay
+
+    rjmp
+
+Sec_3:
+    ldi r16, 0x80
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x01
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x40
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x02
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x20
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x04
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x10
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x08
+    out PORTA, r16
+    rcall delay
+
+    rjmp
+
+Sec_4:
+    ldi r16, 0xc0
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x03
+    out PORTA, r16
+    rcall delay
+    
+    ldi r16, 0x30
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x0c
+    out PORTA, r16
+    rcall delay
+
+    rjmp
+
+Sec_5:
+    ldi r16, 0xaa
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x55
+    out PORTA, r16
+    rcall delay
+
+    rjmp
+
+Sec_6:
+    ldi r16, 0x80
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0xc0
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0xe0
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0xf0
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0xf8
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0xfc
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0xfe
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0xff
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x7f ; hhhhh
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x3f
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x1f
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x0f
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x07
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x03
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x01
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x00
+    out PORTA, r16
+    rcall delay
+
+    rjmp
+
+Sec_7:
+    ldi r16, 0xff
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0xfe
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0xfc
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0xf8
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0xf0
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0xe0
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0xc0
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x80
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x00
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x01; hhhhh
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x03
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x07
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x0f
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x1f
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x3f
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x7f
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0xff
+    out PORTA, r16
+    rcall delay
+
+    rjmp
+
+Sec_8:
+    ldi r16, 0xee
+    out PORTA, r16
+    rcall delay
+
+    ldi r16, 0x11
+    out PORTA, r16
+    rcall delay
+
+    rjmp
