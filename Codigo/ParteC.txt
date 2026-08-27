@@ -366,7 +366,7 @@ loop_8:
 delay:
 	ldi r18, 100 ; carga n como número de inicio  en cada uno de los registros
 L1: ldi r19, 100 
-L2: ldi r20, 150
+L2: ldi r20, 100
 L3: ; como se hizo pull-Up (esta ATmega no tiene resistencia interna en Pull-Down) 
 ; cunado se presiona el botón es 0 (GND) y cuando está suelto es 1
 	sbis PINB, 0 ; si el botón en PB0 está en 0 (presionado)
