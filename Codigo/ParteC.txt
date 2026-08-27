@@ -7,6 +7,12 @@ main:
     ldi r16, 0xFF ; carga unos
     out DDRA, r16; carga los pines como salida (de A)
 
+; Configuro Port B para Botones
+	ldi r16,0x00 ; carga 0's
+	out DDRB, r16; se cargan los pines como entrada (por 0)
+	ldi r16, 0x07 ; se activa la resistencia Pull-Up en los primeros tres pines de B
+	out  PORTB, r16
+
 ; Secuencias
 Sec_1: ; secuencia: -> prende y apaga ... prende y apaga
     ldi r16, 0x80 ; Posición 7
@@ -41,7 +47,7 @@ Sec_1: ; secuencia: -> prende y apaga ... prende y apaga
     out PORTA, r16
     rcall delay
     
-    rjmp
+    rjmp ev_limites
 
 Sec_2:
     ldi r16, 0c0
@@ -76,7 +82,7 @@ Sec_2:
     out PORTA, r16
     rcall delay
 
-    rjmp
+    rjmp ev_limites
 
 Sec_3:
     ldi r16, 0x80
@@ -111,7 +117,7 @@ Sec_3:
     out PORTA, r16
     rcall delay
 
-    rjmp
+    rjmp ev_limites
 
 Sec_4:
     ldi r16, 0xc0
@@ -130,7 +136,7 @@ Sec_4:
     out PORTA, r16
     rcall delay
 
-    rjmp
+    rjmp ev_limites
 
 Sec_5:
     ldi r16, 0xaa
@@ -141,7 +147,7 @@ Sec_5:
     out PORTA, r16
     rcall delay
 
-    rjmp
+    rjmp ev_limites
 
 Sec_6:
     ldi r16, 0x80
@@ -208,7 +214,7 @@ Sec_6:
     out PORTA, r16
     rcall delay
 
-    rjmp
+    rjmp ev_limites
 
 Sec_7:
     ldi r16, 0xff
@@ -279,7 +285,7 @@ Sec_7:
     out PORTA, r16
     rcall delay
 
-    rjmp
+    rjmp ev_limites
 
 Sec_8:
     ldi r16, 0xee
@@ -290,4 +296,59 @@ Sec_8:
     out PORTA, r16
     rcall delay
 
-    rjmp
+    rjmp ev_limites
+
+    ev_limites:
+    cpi r17, 9 ; después de pasar la secuancia 8 
+    breq ir_pri; vuelve a la primera secuencia
+    cpi r17, 0; después de pasar por la primera secuencia
+    breq ir_ul; vuelve a la octava secuencia
+    rjmp ev_Sec
+
+ir_pri:
+    ldi r17, 1
+    rjmp ev_Sec
+
+ir_ul:
+    ldi r17, 8
+    rjmp ev_Sec
+
+ev_Sec:
+    cpi r17, 1
+    brne loop_2
+    rjmp Sec_1
+
+loop_2:
+    cpi r17, 2
+    brne loop_3
+    rjmp Sec_2
+
+loop_3:
+    cpi r17, 3
+    brne loop_4
+    rjmp Sec_3
+
+loop_4:
+    cpi r17, 4
+    brne loop_5
+    rjmp Sec_4
+
+loop_5:
+    cpi r17, 5
+    brne loop_6
+    rjmp Sec_5
+
+loop_6:
+    cpi r17, 6
+    brne loop_7
+    rjmp Sec_6
+
+loop_7:
+    cpi r17, 7
+    brne loop_8
+    rjmp Sec_7
+
+loop_8:
+    cpi r17, 8
+    brne ev_limites
+    rjmp Sec_8
