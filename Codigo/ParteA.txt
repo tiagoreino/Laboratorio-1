@@ -1,0 +1,231 @@
+.include "m328pdef.inc"
+
+;===================================================
+; POSICIONES DE MEMORIA
+;====================================================
+
+.equ POS0 = 0x0100
+.equ POS1 = 0x0101
+.equ POS2 = 0x0102
+
+
+;===================================================
+; CARGAS
+;===================================================
+
+.equ CARGA_LIGERA = 1
+.equ CARGA_MEDIA   = 2
+.equ CARGA_PESADA  = 0
+
+
+;===================================================
+; IDENTIFICADORES DE ESTADOS
+;===================================================
+
+.equ ID_LISTO        = 0
+.equ ID_LAVADO       = 1
+.equ ID_CENTRIFUGADO = 2
+.equ ID_SECADO       = 3
+.equ ID_FIN          = 4
+
+
+;==================================================
+; RESET
+;==================================================
+
+.org 0x0000
+rjmp RESET
+
+
+.org OC1Aaddr
+    rjmp TIMER1_COMPA
+
+
+;==================================================
+; INICIALIZACIÓN
+;==================================================
+
+RESET:
+
+    ;----------------------------------------------
+    ; Inicializar Stack Pointer
+    ;----------------------------------------------
+
+    ldi r16, HIGH(RAMEND)
+    out SPH, r16
+
+    ldi r16, LOW(RAMEND)
+    out SPL, r16
+
+    ;----------------------------------------------
+    ; PB0, PB1 , PB2 , PB3 , PB4 , PB5 como salidas
+	; PB0, PB1 , PB2 -> Carga seleccionada
+	; PB3 -> Giro de motor Izquierda
+	; PB4 -> Giro de motor Derecha
+	; PB5 o LED L Arduino -> Reloj
+    ;----------------------------------------------
+
+    ldi r16, (1 << DDB0) | (1 << DDB1) | (1 << DDB2) | (1 << DDB3) | (1 << DDB4) 
+    out DDRB, r16
+
+
+    ;==================================================
+    ; PC0-PC4 como salidas para LEDs de estados
+    ;
+    ; PC0 = LISTO
+    ; PC1 = LAVADO
+    ; PC2 = CENTRIFUGADO
+    ; PC3 = SECADO
+    ; PC4 = FIN
+    ;==================================================
+
+    ldi r16, 0b00011111
+    out DDRC, r16
+
+    ;----------------------------------------------
+    ; PD2 como entrada
+    ;----------------------------------------------
+
+    cbi DDRD, PD2
+
+    ; Pull-Up interna
+    sbi PORTD, PD2
+
+
+    ;----------------------------------------------
+    ; PD3 como entrada
+    ;----------------------------------------------
+
+    cbi DDRD, PD3
+
+    ; Pull-Up interna
+    sbi PORTD, PD3
+
+
+	;----------------------------------------------
+    ; PD4 como entrada
+    ;----------------------------------------------
+
+    cbi DDRD, PD4
+
+    ; Pull-Up interna
+    sbi PORTD, PD4
+
+
+	;----------------------------------------------
+    ; PD5 como entrada
+    ;----------------------------------------------
+
+    cbi DDRD, PD5
+
+    ; Pull-Up interna
+    sbi PORTD, PD5
+
+
+    ;----------------------------------------------
+    ; Estado inicial
+    ;
+    ; POS0 = 1
+    ; POS1 = 0
+    ; POS2 = 0
+    ;----------------------------------------------
+
+    ldi r16, 1
+    sts POS0, r16
+
+    clr r16
+    sts POS1, r16
+    sts POS2, r16
+
+	;----------------------------------------------
+    ; LED de carga inicial
+    ; PB0 = carga ligera
+    ;----------------------------------------------
+
+    ldi r16, 0b00000001
+    out PORTB, r16
+
+    ;----------------------------------------------
+    ; r17 = posición seleccionada
+    ;
+    ; 0 = ligera
+    ; 1 = media
+    ; 2 = pesada
+    ;----------------------------------------------
+
+    clr r17
+
+    ;----------------------------------------------
+    ; r18 = carga seleccionada
+    ;
+    ; 0 = ligera
+    ; 1 = media
+    ; 2 = pesada
+    ;----------------------------------------------
+
+    clr r18
+
+    ;==================================================
+    ; Mostrar estado LISTO
+    ;==================================================
+
+    rcall LED_LISTO
+
+	;----------------------------------------------
+    ; Configurar Timer1
+    ;----------------------------------------------
+
+    rcall CONFIG_TIMER1
+
+;==================================================
+; PROGRAMA PRINCIPAL
+;==================================================
+
+MAIN:
+
+ESPERAR_PULSACION:
+
+;-------------------------------------------------
+;Condición de puerta abierta o nivel bajo - 1-NO PERMITE INICIO , 0-PERMITE INICIO (EN EL SWITCH)
+;-------------------------------------------------
+;Puerta
+sbic PIND, PD4
+rjmp SALTO_CONDICION
+;Nivel_agua
+sbic PIND, PD5
+rjmp SALTO_CONDICION
+
+; Primero comprobamos el botón de PARADA
+sbic PIND, PD3
+rjmp DETECTAR_INICIO
+
+SALTO_CONDICION:
+
+; Botón normal PD2
+sbic PIND, PD2
+rjmp ESPERAR_PULSACION
+
+;------------------------------------------------
+; Se detectó una posible pulsación
+;------------------------------------------------
+
+rcall DELAY
+
+;------------------------------------------------
+; Confirmar que sigue presionado
+;------------------------------------------------
+
+sbic PIND, PD2
+rjmp ESPERAR_PULSACION
+
+;------------------------------------------------
+; Pulsación confirmada
+;------------------------------------------------
+
+cpi r17, 0
+breq POSICION_0
+
+cpi r17, 1
+breq POSICION_1
+
+rjmp POSICION_2
