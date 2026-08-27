@@ -60,7 +60,7 @@ Sec_1: ; secuencia: -> prende y apaga ... prende y apaga
     rjmp ev_limites
 
 Sec_2:
-    ldi r16, 0c0
+    ldi r16, 0xc0
     out PORTA, r16
     rcall delay
 
