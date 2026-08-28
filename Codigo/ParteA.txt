@@ -229,3 +229,642 @@ cpi r17, 1
 breq POSICION_1
 
 rjmp POSICION_2
+;====================================================
+; POSICIÓN 0 -> POSICIÓN 1
+;====================================================
+
+POSICION_0:
+
+   ; POS0 = 0
+clr r18
+sts POS0, r18
+
+; POS1 = 1
+ldi r18, 1
+sts POS1, r18
+
+; LED0 = 1
+; LED1 = 0
+; LED2 = 0
+
+sbi PORTB, PB0
+cbi PORTB, PB1
+cbi PORTB, PB2
+
+; Nueva posición = 1
+inc r17
+
+rjmp ESPERAR_SUELTA
+
+POSICION_1:
+
+    ; POS1 = 0
+clr r18
+sts POS1, r18
+
+; POS2 = 1
+ldi r18, 1
+sts POS2, r18
+
+; LED0 = 0
+; LED1 = 1
+; LED2 = 0
+
+cbi PORTB, PB0
+sbi PORTB, PB1
+cbi PORTB, PB2
+
+; Nueva posición = 2
+inc r17
+
+rjmp ESPERAR_SUELTA
+
+;==================================================
+; POSICIÓN 2 -> POSICIÓN 0
+;==================================================
+
+POSICION_2:
+
+   ; POS2 = 0
+clr r18
+sts POS2, r18
+
+; POS0 = 1
+ldi r18, 1
+sts POS0, r18
+
+; LED0 = 0
+; LED1 = 0
+; LED2 = 1
+
+cbi PORTB, PB0
+cbi PORTB, PB1
+sbi PORTB, PB2
+
+; Nueva posición = 0
+clr r17
+
+rjmp ESPERAR_SUELTA
+
+;====================================================
+; ESPERAR QUE PD2 SEA SOLTADO
+;====================================================
+
+ESPERAR_SUELTA:
+
+;-------------------------------------------------
+;Condición de puerta abierta o nivel bajo -> 1-NO PERMITE INICIO , 0-PERMITE INICIO (EN EL SWITCH)
+;-------------------------------------------------
+;Puerta
+sbic PIND, PD4
+rjmp SALTO_CONDICION1
+;Nivel_agua
+sbic PIND, PD5
+rjmp SALTO_CONDICION1
+
+; Mientras esperamos que se libere PD2,
+; también comprobamos el botón de PARADA
+sbic PIND, PD3
+rjmp DETECTAR_INICIO
+
+; Mientras PD2 = 0
+; significa que sigue presionado
+
+SALTO_CONDICION1:
+
+sbis PIND, PD2
+rjmp ESPERAR_SUELTA
+
+
+; Cuando PD2 = 1
+; volvemos a esperar una nueva pulsación
+
+rjmp MAIN
+
+;==================================================
+; DETECTAR BOTÓN DE INICIO
+;==================================================
+
+DETECTAR_INICIO:
+
+    ;----------------------------------------------
+    ; Antirrebote
+    ;----------------------------------------------
+
+    rcall DELAY
+
+    ;----------------------------------------------
+    ; Confirmar que PD3 sigue en 0
+    ;----------------------------------------------
+
+    sbic PIND, PD3
+    rjmp INICIO_CONFIRMADO
+
+    ; Si PD3 = 1:
+    ; era un rebote
+    rjmp MAIN
+
+;==================================================
+; INICIO CONFIRMADO
+;==================================================
+
+INICIO_CONFIRMADO:
+
+    ;----------------------------------------------
+    ; Esperar que PD3 sea liberado
+    ;----------------------------------------------
+
+ESPERAR_LIBERACION_INICIO:
+
+    ; Si PD3 = 0 -> sigue presionado
+    sbis PIND, PD3
+    rjmp ESPERAR_LIBERACION_INICIO
+
+
+    ; Si PD3 = 1 -> fue liberado
+
+    rjmp ESTADO_LAVADO
+
+
+;===================================================
+;===================================================
+;                LAVADORA
+;==================================================
+;==================================================
+
+
+;==================================================
+; ESTADO LAVADO
+;===================================================
+
+ESTADO_LAVADO:
+
+    ; LED de lavado
+    rcall LED_LAVADO
+
+    ;----------------------------------------------
+    ; 5 ciclos de lavado
+    ;----------------------------------------------
+
+    ldi r21, 5
+
+
+CICLO_LAVADO:
+
+    ;----------------------------------------------
+    ; Determinar tiempo según carga
+    ;----------------------------------------------
+
+    cpi r17, CARGA_LIGERA
+    breq LAVADO_LIGERO
+
+    cpi r17, CARGA_MEDIA
+    breq LAVADO_MEDIO
+
+    rjmp LAVADO_PESADO
+
+
+;==================================================
+; LAVADO CARGA LIGERA
+;==================================================
+
+LAVADO_LIGERO:
+	
+	;IMPORTANTE
+	rcall LED_LAVADO
+	
+    ; 2 segundos de giro
+    ldi r22, 2
+	clr r24
+    rcall ESPERA_TIMER
+
+	;OFF LED_LAVADO
+	ldi r25, 0b00000000
+    out PORTC, r25
+
+    ; 1 segundo de espera
+    ldi r22, 1
+	clr r24
+    rcall ESPERA_TIMER
+
+    rjmp FIN_CICLO_LAVADO
+
+
+;==================================================
+; LAVADO CARGA MEDIA
+;==================================================
+
+LAVADO_MEDIO:
+
+    ;IMPORTANTE
+	rcall LED_LAVADO
+	
+    ; 2 segundos de giro
+    ldi r22, 3
+	clr r24
+    rcall ESPERA_TIMER
+
+	;OFF LED_LAVADO
+	ldi r25, 0b00000000
+    out PORTC, r25
+
+    ; 1 segundo de espera
+    ldi r22, 2
+	clr r24
+    rcall ESPERA_TIMER
+
+    rjmp FIN_CICLO_LAVADO
+
+
+;==================================================
+; LAVADO CARGA PESADA
+;==================================================
+
+LAVADO_PESADO:
+
+   ;IMPORTANTE
+	rcall LED_LAVADO
+	
+    ; 2 segundos de giro
+    ldi r22, 4
+	clr r24
+    rcall ESPERA_TIMER
+
+	;OFF LED_LAVADO
+	ldi r25, 0b00000000
+    out PORTC, r25
+
+    ; 1 segundo de espera
+    ldi r22, 3
+	clr r24
+    rcall ESPERA_TIMER
+
+    rjmp FIN_CICLO_LAVADO
+
+;==================================================
+; TERMINAR CICLO DE LAVADO
+;==================================================
+
+FIN_CICLO_LAVADO:
+
+    dec r21
+    brne CICLO_LAVADO
+
+    rjmp ESTADO_CENTRIFUGADO
+
+
+;==================================================
+; ESTADO CENTRIFUGADO
+;==================================================
+
+ESTADO_CENTRIFUGADO:
+
+    ; LED de centrifugado
+    rcall LED_CENTRIFUGADO
+
+
+    ;----------------------------------------------
+    ; Ligera = 15 s
+    ; Media  = 18 s
+    ; Pesada = 21 s
+    ;----------------------------------------------
+
+    cpi r17, CARGA_LIGERA
+    breq CENTRI_LIGERA
+
+    cpi r17, CARGA_MEDIA
+    breq CENTRI_MEDIA
+
+    rjmp CENTRI_PESADA
+
+
+CENTRI_LIGERA:
+
+   ;IMPORTANTE
+	rcall LED_CENTRIFUGADO
+	
+    ; 10 segundos de giro a máxima velocidad
+    ldi r22, 15
+	clr r24
+    rcall ESPERA_TIMER
+
+    rjmp ESTADO_SECADO
+
+
+CENTRI_MEDIA:
+
+    ;IMPORTANTE
+	rcall LED_CENTRIFUGADO
+	
+    ; 10 segundos de giro a máxima velocidad
+    ldi r22, 18
+	clr r24
+    rcall ESPERA_TIMER
+
+    rjmp ESTADO_SECADO
+
+
+CENTRI_PESADA:
+
+    ;IMPORTANTE
+	rcall LED_CENTRIFUGADO
+	
+    ; 10 segundos de giro a máxima velocidad
+    ldi r22, 21
+	clr r24
+    rcall ESPERA_TIMER
+
+    rjmp ESTADO_SECADO
+
+
+;==================================================
+; ESTADO SECADO
+;==================================================
+
+ESTADO_SECADO:
+
+    ; LED de secado
+    rcall LED_SECADO
+
+
+    ;----------------------------------------------
+    ; Cantidad provisional de ciclos
+    ;
+    ; Ligera = 1
+    ; Media  = 2
+    ; Pesada = 3
+    ;----------------------------------------------
+
+	;ciclos de secado dependiendo de la carga
+    ldi r21, 1
+    cpi r17, CARGA_LIGERA
+    breq SECADO_LIGERO
+
+	;ciclos de secado dependiendo de la carga
+    ldi r21, 2
+    cpi r17, CARGA_MEDIA
+    breq SECADO_MEDIO
+
+	;ciclos de secado dependiendo de la carga
+    ldi r21, 3
+    rjmp SECADO_PESADO
+
+	;Solución para que cambie los ciclos de secado dependiendo de la carga
+ESTADO_SECADO1:
+
+    ; LED de secado
+    rcall LED_SECADO
+
+    cpi r17, CARGA_LIGERA
+    breq SECADO_LIGERO
+
+    cpi r17, CARGA_MEDIA
+    breq SECADO_MEDIO
+
+    rjmp SECADO_PESADO
+
+
+;==================================================
+; SECADO LIGERO
+;==================================================
+
+SECADO_LIGERO:
+
+	;IMPORTANTE
+	rcall LED_SECADO
+    ; 5 segundos de giro a la derecha -> prende salida PB3
+    ldi r22, 5
+	sbi PORTB, PB3
+	clr r24
+    rcall ESPERA_TIMER
+
+	;OFF LED_SECADO
+	ldi r25, 0b00000000
+    out PORTC, r25
+
+    ; 3 segundo de espera -> apaga salida PB3
+    ldi r22, 3
+	clr r24
+    rcall ESPERA_TIMER
+	cbi PORTB, PB3
+
+	;IMPORTANTE 
+	rcall LED_SECADO
+	; 5 segundos de giro a la izquierda -> prende salida PB4
+    ldi r22, 5
+	sbi PORTB, PB4
+	clr r24
+    rcall ESPERA_TIMER
+
+	;OFF LED_SECADO
+	ldi r25, 0b00000000
+    out PORTC, r25
+
+	; 3 segundo de espera -> apaga salida PB4
+    ldi r22, 3
+	clr r24
+    rcall ESPERA_TIMER
+	cbi PORTB, PB4
+
+    rjmp CICLOS_SECADO
+
+
+;==================================================
+; SECADO MEDIO
+;===================================================
+
+SECADO_MEDIO:
+
+	;IMPORTANTE
+	rcall LED_SECADO
+    ; 5 segundos de giro a la derecha -> prende salida PB3
+    ldi r22, 7
+	sbi PORTB, PB3
+	clr r24
+    rcall ESPERA_TIMER
+
+	;OFF LED_SECADO
+	ldi r25, 0b00000000
+    out PORTC, r25
+
+    ; 3 segundo de espera -> apaga salida PB3
+    ldi r22, 5
+	clr r24
+    rcall ESPERA_TIMER
+	cbi PORTB, PB3
+
+	;IMPORTANTE 
+	rcall LED_SECADO
+	; 5 segundos de giro a la izquierda -> prende salida PB4
+    ldi r22, 7
+	sbi PORTB, PB4
+	clr r24
+    rcall ESPERA_TIMER
+
+	;OFF LED_SECADO
+	ldi r25, 0b00000000
+    out PORTC, r25
+
+	; 3 segundo de espera -> apaga salida PB4
+    ldi r22, 5
+	clr r24
+    rcall ESPERA_TIMER
+	cbi PORTB, PB4
+
+    rjmp CICLOS_SECADO
+
+
+;==================================================
+; SECADO PESADO
+;==================================================
+
+SECADO_PESADO:
+
+	;IMPORTANTE
+	rcall LED_SECADO
+    ; 5 segundos de giro a la derecha -> prende salida PB3
+    ldi r22, 9
+	sbi PORTB, PB3
+	clr r24
+    rcall ESPERA_TIMER
+
+	;OFF LED_SECADO
+	ldi r25, 0b00000000
+    out PORTC, r25
+
+    ; 3 segundo de espera -> apaga salida PB3
+    ldi r22, 7
+	clr r24
+    rcall ESPERA_TIMER
+	cbi PORTB, PB3
+
+	;IMPORTANTE 
+	rcall LED_SECADO
+	; 5 segundos de giro a la izquierda -> prende salida PB4
+    ldi r22, 9
+	sbi PORTB, PB4
+	clr r24
+    rcall ESPERA_TIMER
+
+	;OFF LED_SECADO
+	ldi r25, 0b00000000
+    out PORTC, r25
+
+	; 3 segundo de espera -> apaga salida PB4
+    ldi r22, 7
+	clr r24
+    rcall ESPERA_TIMER
+	cbi PORTB, PB4
+
+    rjmp CICLOS_SECADO
+
+
+;===================================================
+; CICLOS DE SECADO
+;==================================================
+
+;Agrego un salto que tenga mas alcance de líneas hacia atrás
+SALTO_SECADO:
+	rjmp ESTADO_SECADO1
+
+CICLOS_SECADO:
+
+    dec r21
+    brne SALTO_SECADO
+	
+	;Deja en OFF salidas PB3 y PB4
+
+    rjmp ESTADO_FIN
+
+
+;==================================================
+; ESTADO FIN
+;==================================================
+
+ESTADO_FIN:
+
+    ; LED de fin
+    rcall LED_FIN
+
+
+FIN_PROCESO:
+
+    rjmp FIN_PROCESO
+
+
+;==================================================
+;==================================================
+;              LEDs DE ESTADO
+;==================================================
+;==================================================
+
+
+;==================================================
+; LED LISTO
+;==================================================
+
+LED_LISTO:
+
+    ; PC0 = 1
+
+    ldi r25, 0b00000001
+    out PORTC, r25
+
+    ret
+
+
+;==================================================
+; LED LAVADO
+;==================================================
+
+LED_LAVADO:
+
+    ; PC1 = 1
+
+    ldi r25, 0b00000010
+    out PORTC, r25
+
+    ret
+
+
+;==================================================
+; LED CENTRIFUGADO
+;===================================================
+
+LED_CENTRIFUGADO:
+
+    ; PC2 = 1
+
+    ldi r25, 0b00000100
+    out PORTC, r25
+
+    ret
+
+
+;==================================================
+; LED SECADO
+;==================================================
+
+LED_SECADO:
+
+    ; PC3 = 1
+
+    ldi r25, 0b00001000
+    out PORTC, r25
+
+    ret
+
+
+;==================================================
+; LED FIN
+;==================================================
+
+LED_FIN:
+
+    ; PC4 = 1
+
+    ldi r25, 0b00010000
+    out PORTC, r25
+
+    ret
+
