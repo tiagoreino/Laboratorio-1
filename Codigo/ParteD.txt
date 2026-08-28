@@ -2,31 +2,254 @@ start:
     .include "m2560def.inc"
 
 	; Le cambiamos nombre a los registros para comodidad
-	.def A_B = r16
-	.def OpCode = r17
-	.def resultados = r18
+	.def A = r16
+	.def B = r17
+	.def OpCode = r18
+	.def salidas = r19
+	.def resultadoA = r20
+	.def resultadoB = r21
+	.def flags = r22
 
 	.cseg
 	.org 0x00
 
-	; Numero A 4 bits Numero B 4 bits como entradas
-	ldi A_B, 0b00000000
-	out DDRA, A_B
+	; Numero A 4 bits como entradas
+	ldi A, 0b00000000
+	out DDRA, A
 
 	; Pull-up internas
-	ldi A_B, 0b11111111
-	out PORTA, A_B
+	ldi A, 0b11111111
+	out PORTA, A
+
+    ; Numero B 4 bits como entradas
+	ldi B, 0b00000000
+	out DDRC, B
+
+	; Pull-up internas
+	ldi B, 0b00001111
+	out PORTC, B
 
 	; OpCode como entrada
 	ldi OpCode, 0b00000000
 	out DDRC, OpCode
 
 	; Pull-up internas
-	ldi OpCode, 0b11100000
-	out PORTA, OpCode
+	ldi OpCode, 0b00000111
+	out PORTC, OpCode
 
 	; Resultados como salidas
-	ldi salidas, 0b01111111
-	out DDRD, salidas
+	ldi salidas, 0b11111111
+	sts DDRL, salidas
+
+    ; Flags como salidas
+	ldi flags, 0b00000111
+	out DDRG, flags
 
 	main_loop:
+        in OpCode, PINB
+		andi OpCode, 0b00000111
+
+		cpi OpCode, 0b00000000
+		breq clear
+
+		cpi OpCode, 0b00000001
+		breq resta
+
+		cpi OpCode, 0b00000010
+		breq suma
+
+		cpi OpCode, 0b00000011
+		breq x_or
+
+		cpi OpCode, 0b00000100
+		breq a_nd_salto
+
+		cpi OpCode, 0b00000101
+		breq o_r_salto
+
+		cpi OpCode, 0b00000110
+		breq despla_salto
+
+		cpi OpCode, 0b00000111
+		breq aumen_salto
+
+		rjmp main_loop
+
+	clear:
+		clr salidas
+
+		in flags, SREG
+		sts PORTL, salidas
+		out PORTG, flags
+
+		in OpCode, PINB
+		andi OpCode, 0b00000111
+		cpi OpCode, 0b00000000
+		brne main_loop
+
+		rjmp clear
+
+	resta:
+		mov resultadoA, A
+		mov resultadoB, B
+		sub resultadoA, resultadoB
+
+		mov salidas, resultadoA
+		in flags, SREG
+		sts PORTL, salidas
+		out PORTG, flags
+
+		in A, PINA
+		andi A, 0b00001111
+		in B, PINC
+		andi B, 0b00001111
+
+		in OpCode, PINB
+		andi OpCode, 0b00000111
+		cpi OpCode, 0b00000001
+		brne main_loop
+
+		rjmp resta
+
+a_nd_salto:
+rjmp a_nd
+o_r_salto:
+rjmp o_r
+despla_salto:
+rjmp despla
+aumen_salto:
+rjmp aumen
+
+	suma:
+		mov resultadoA, A
+		mov resultadoB, B
+		add resultadoA, resultadoB
+
+		mov salidas, resultadoA
+		in flags, SREG
+		sts PORTL, salidas
+		out PORTG, flags
+
+		in A, PINA
+		andi A, 0b00001111
+		in B, PINC
+		andi B, 0b00001111
+
+		in OpCode, PINB
+		andi OpCode, 0b00000111
+		cpi OpCode, 0b00000010
+		brne salto
+
+		rjmp suma
+
+	x_or:
+		mov resultadoA, A
+		mov resultadoB, B
+		eor resultadoA, resultadoB
+
+		mov salidas, resultadoA
+		in flags, SREG
+		sts PORTL, salidas
+		out PORTG, flags
+
+		in A, PINA
+		andi A, 0b00001111
+		in B, PINC
+		andi B, 0b00001111
+
+		in OpCode, PINB
+		andi OpCode, 0b00000111
+		cpi OpCode, 0b00000011
+		brne salto
+
+		rjmp x_or
+
+
+	a_nd:
+		mov resultadoA, A
+		mov resultadoB, B
+		and resultadoA, resultadoB
+
+		mov salidas, resultadoA
+		in flags, SREG
+		sts PORTL, salidas
+		out PORTG, flags
+
+		in A, PINA
+		andi A, 0b00001111
+		in B, PINC
+		andi B, 0b00001111
+
+		in OpCode, PINB
+		andi OpCode, 0b00000111
+		cpi OpCode, 0b00000100
+		brne salto
+
+		rjmp a_nd
+
+salto:
+rjmp main_loop
+
+	o_r:
+		mov resultadoA, A
+		mov resultadoB, B
+		or resultadoA, resultadoB
+
+		mov salidas, resultadoA
+		in flags, SREG
+		sts PORTL, salidas
+		out PORTG, flags
+
+		in A, PINA
+		andi A, 0b00001111
+		in B, PINC
+		andi B, 0b00001111
+
+		in OpCode, PINB
+		andi OpCode, 0b00000111
+		cpi OpCode, 0b00000101
+		brne salto
+
+		rjmp o_r
+
+	despla:
+		mov resultadoA, A
+		lsl resultadoA
+
+		mov salidas, resultadoA
+		in flags, SREG
+		sts PORTL, salidas
+		out PORTG, flags
+
+		in A, PINA
+		andi A, 0b00001111
+		in B, PINC
+		andi B, 0b00001111
+
+		in OpCode, PINB
+		andi OpCode, 0b00000111
+		cpi OpCode, 0b00000110
+		brne salto
+
+		rjmp despla
+
+	aumen:
+		mov resultadoA, A
+		inc resultadoA
+
+		mov salidas, resultadoA
+		in flags, SREG
+		sts PORTL, salidas
+		out PORTG, flags
+
+		in A, PINA
+		andi A, 0b00001111
+		in B, PINC
+		andi B, 0b00001111
+
+		in OpCode, PINB
+		andi OpCode, 0b00000111
+		cpi OpCode, 0b00000111
+		brne salto
+
+		rjmp aumen
