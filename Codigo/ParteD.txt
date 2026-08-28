@@ -1,0 +1,32 @@
+start:
+    .include "m2560def.inc"
+
+	; Le cambiamos nombre a los registros para comodidad
+	.def A_B = r16
+	.def OpCode = r17
+	.def resultados = r18
+
+	.cseg
+	.org 0x00
+
+	; Numero A 4 bits Numero B 4 bits como entradas
+	ldi A_B, 0b00000000
+	out DDRA, A_B
+
+	; Pull-up internas
+	ldi A_B, 0b11111111
+	out PORTA, A_B
+
+	; OpCode como entrada
+	ldi OpCode, 0b00000000
+	out DDRC, OpCode
+
+	; Pull-up internas
+	ldi OpCode, 0b11100000
+	out PORTA, OpCode
+
+	; Resultados como salidas
+	ldi salidas, 0b01111111
+	out DDRD, salidas
+
+	main_loop:
