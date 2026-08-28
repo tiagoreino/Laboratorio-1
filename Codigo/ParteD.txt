@@ -9,25 +9,18 @@ start:
 	.def resultadoA = r20
 	.def resultadoB = r21
 	.def flags = r22
+    .def multi = r23
 
 	.cseg
 	.org 0x00
 
-	; Numero A 4 bits como entradas
-	ldi A, 0b00000000
-	out DDRA, A
+	; los primeros 4 bits son el numero y el 5to bit es de seleccion de numero
+	ldi multi, 0b00000000
+	out DDRA, multi
 
 	; Pull-up internas
-	ldi A, 0b11111111
-	out PORTA, A
-
-    ; Numero B 4 bits como entradas
-	ldi B, 0b00000000
-	out DDRC, B
-
-	; Pull-up internas
-	ldi B, 0b00001111
-	out PORTC, B
+	ldi multi, 0b00011111
+	out PORTA, multi
 
 	; OpCode como entrada
 	ldi OpCode, 0b00000000
@@ -38,7 +31,7 @@ start:
 	out PORTC, OpCode
 
 	; Resultados como salidas
-	ldi salidas, 0b11111111
+	ldi salidas, 0b00011111
 	sts DDRL, salidas
 
     ; Flags como salidas
@@ -94,15 +87,17 @@ start:
 		mov resultadoB, B
 		sub resultadoA, resultadoB
 
-		mov salidas, resultadoA
-		in flags, SREG
-		sts PORTL, salidas
-		out PORTG, flags
+        in flags, SREG
+        out PORTG, flags
 
-		in A, PINA
-		andi A, 0b00001111
-		in B, PINC
-		andi B, 0b00001111
+        brpl no_neg
+		neg resultadoA
+		no_neg:
+
+		mov salidas, resultadoA
+		sts PORTL, salidas
+		
+		rcall seleccion
 
 		in OpCode, PINB
 		andi OpCode, 0b00000111
@@ -130,10 +125,7 @@ rjmp aumen
 		sts PORTL, salidas
 		out PORTG, flags
 
-		in A, PINA
-		andi A, 0b00001111
-		in B, PINC
-		andi B, 0b00001111
+		rcall seleccion
 
 		in OpCode, PINB
 		andi OpCode, 0b00000111
@@ -152,10 +144,7 @@ rjmp aumen
 		sts PORTL, salidas
 		out PORTG, flags
 
-		in A, PINA
-		andi A, 0b00001111
-		in B, PINC
-		andi B, 0b00001111
+		rcall seleccion
 
 		in OpCode, PINB
 		andi OpCode, 0b00000111
@@ -175,10 +164,7 @@ rjmp aumen
 		sts PORTL, salidas
 		out PORTG, flags
 
-		in A, PINA
-		andi A, 0b00001111
-		in B, PINC
-		andi B, 0b00001111
+		rcall seleccion
 
 		in OpCode, PINB
 		andi OpCode, 0b00000111
@@ -200,10 +186,7 @@ rjmp main_loop
 		sts PORTL, salidas
 		out PORTG, flags
 
-		in A, PINA
-		andi A, 0b00001111
-		in B, PINC
-		andi B, 0b00001111
+		rcall seleccion
 
 		in OpCode, PINB
 		andi OpCode, 0b00000111
@@ -221,10 +204,7 @@ rjmp main_loop
 		sts PORTL, salidas
 		out PORTG, flags
 
-		in A, PINA
-		andi A, 0b00001111
-		in B, PINC
-		andi B, 0b00001111
+		rcall seleccion
 
 		in OpCode, PINB
 		andi OpCode, 0b00000111
@@ -242,10 +222,7 @@ rjmp main_loop
 		sts PORTL, salidas
 		out PORTG, flags
 
-		in A, PINA
-		andi A, 0b00001111
-		in B, PINC
-		andi B, 0b00001111
+		rcall seleccion
 
 		in OpCode, PINB
 		andi OpCode, 0b00000111
@@ -253,3 +230,15 @@ rjmp main_loop
 		brne salto
 
 		rjmp aumen
+
+    seleccion:
+			in multi, PINA
+			sbrs multi, 4        
+			rjmp num_B
+			andi multi, 0b00001111
+			mov A, multi
+			ret
+			num_B:
+				andi multi, 0b00001111
+				mov B, multi
+				ret
