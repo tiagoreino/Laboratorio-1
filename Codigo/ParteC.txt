@@ -3,9 +3,25 @@
 .org 0x00
 
 main:
+; Iniciazción de pila
+	ldi r16, LOW(RAMEND)
+	out SPL, r16
+	ldi r16, HIGH(RAMEND)
+	out SPH, r16
+
 ; Configuro Port A para LEDs
     ldi r16, 0xFF ; carga unos
     out DDRA, r16; carga los pines como salida (de A)
+
+; Configuro Port B para Botones
+	ldi r16,0x00 ; carga 0's
+	out DDRB, r16; se cargan los pines como entrada (por 0)
+	ldi r16, 0x07 ; se activa la resistencia Pull-Up en los primeros tres pines de B
+	out  PORTB, r16
+
+; Inicio del sistema
+	ldi r17, 1 ; se guarda el número de la secuancia actual(se empieza en la primera)
+	rjmp ev_limites
 
 ; Secuencias
 Sec_1: ; secuencia: -> prende y apaga ... prende y apaga
@@ -41,10 +57,10 @@ Sec_1: ; secuencia: -> prende y apaga ... prende y apaga
     out PORTA, r16
     rcall delay
     
-    rjmp
+    rjmp ev_limites
 
 Sec_2:
-    ldi r16, 0c0
+    ldi r16, 0xc0
     out PORTA, r16
     rcall delay
 
@@ -76,7 +92,7 @@ Sec_2:
     out PORTA, r16
     rcall delay
 
-    rjmp
+    rjmp ev_limites
 
 Sec_3:
     ldi r16, 0x80
@@ -111,7 +127,7 @@ Sec_3:
     out PORTA, r16
     rcall delay
 
-    rjmp
+    rjmp ev_limites
 
 Sec_4:
     ldi r16, 0xc0
@@ -130,7 +146,7 @@ Sec_4:
     out PORTA, r16
     rcall delay
 
-    rjmp
+    rjmp ev_limites
 
 Sec_5:
     ldi r16, 0xaa
@@ -141,7 +157,7 @@ Sec_5:
     out PORTA, r16
     rcall delay
 
-    rjmp
+    rjmp ev_limites
 
 Sec_6:
     ldi r16, 0x80
@@ -208,7 +224,7 @@ Sec_6:
     out PORTA, r16
     rcall delay
 
-    rjmp
+    rjmp ev_limites
 
 Sec_7:
     ldi r16, 0xff
@@ -279,7 +295,7 @@ Sec_7:
     out PORTA, r16
     rcall delay
 
-    rjmp
+    rjmp ev_limites
 
 Sec_8:
     ldi r16, 0xee
@@ -290,4 +306,122 @@ Sec_8:
     out PORTA, r16
     rcall delay
 
-    rjmp
+    rjmp ev_limites
+
+ev_limites:
+    cpi r17, 9 ; después de pasar la secuancia 8 
+    breq ir_pri; vuelve a la primera secuencia
+    cpi r17, 0; después de pasar por la primera secuencia
+    breq ir_ul; vuelve a la octava secuencia
+    rjmp ev_Sec
+
+ir_pri:
+    ldi r17, 1
+    rjmp ev_Sec
+
+ir_ul:
+    ldi r17, 8
+    rjmp ev_Sec
+
+ev_Sec:
+    cpi r17, 1
+    brne loop_2
+    rjmp Sec_1
+
+loop_2:
+    cpi r17, 2 ; se compara el registro con el valor 2
+    brne loop_3 ; si es distinto de dos pasa al loop 3(por ende a la secuencia 3)
+    rjmp Sec_2 ; si es 2 ejecuta la secuancia dos 
+
+loop_3:
+    cpi r17, 3
+    brne loop_4
+    rjmp Sec_3
+
+loop_4:
+    cpi r17, 4
+    brne loop_5
+    rjmp Sec_4
+
+loop_5:
+    cpi r17, 5
+    brne loop_6
+    rjmp Sec_5
+
+loop_6:
+    cpi r17, 6
+    brne loop_7
+    rjmp Sec_6
+
+loop_7:
+    cpi r17, 7
+    brne loop_8
+    rjmp Sec_7
+
+loop_8:
+    cpi r17, 8
+    brne ev_limites
+    rjmp Sec_8
+
+delay:
+	ldi r18, 100 ; carga n como número de inicio  en cada uno de los registros
+L1: ldi r19, 100 
+L2: ldi r20, 100
+L3: ; como se hizo pull-Up (esta ATmega no tiene resistencia interna en Pull-Down) 
+; cunado se presiona el botón es 0 (GND) y cuando está suelto es 1
+	sbis PINB, 0 ; si el botón en PB0 está en 0 (presionado)
+	rjmp btn_Izq ; salta a la secuencia anterior
+
+	sbis PINB, 1 ; si el botón PB1 está en 0 (presionado)
+	rjmp btn_Reset ; salta a la primera secuencia
+
+	sbis PINB, 2 ; si el botón PB" está presionadfo (0)
+	rjmp btn_Der ; salta a la secuencia siguiente 
+
+; decremento de los delays 
+	dec r20
+	brne L3 ; vuelve a L1 si r20 distinto de 0
+	dec r19 
+	brne L2
+	dec r18
+	brne L1
+	ret ; empieza de vuelta si pasó el timepo y no se presionaron los botónes
+
+; accionamiento de los botónes
+btn_Izq:
+	dec r17 ; dec decrementa, por ende se reda 1 a r17 pasando a la secuencia anterior
+	rjmp esp_sol     ; CSi se suelta el botón (1),  evalua
+	
+
+btn_Reset:
+	ldi r17, 1 ; Carga uno para volver a la secuencia inicial
+	rjmp esp_sol
+
+btn_Der:
+	inc r17 ; inc incrementar, por ende se suma 1 a r17 pasando a la siguente secuencia
+	rjmp esp_sol
+
+; Liberar la pila
+esp_sol:
+	pop r16 ; Limpia el byte alto de la dirección de retorno
+	pop r16 ; Limpia el byte del medio de la dirección de retorno
+	pop r16 ; Limpia el byte bajo de la dirección de retorno
+	rcall delay_anti_rebo
+
+esp_bu:
+	in r16, PINB ; lee el estado del pin B y lo guarda
+	andi r16, 0x07 ; Se evalúa del PB0 al PB2
+	cpi r16, 0x07 
+	brne esp_bu ; Si algún botón está precionado (1) se queda en el bucle
+	rcall delay_anti_rebo
+	rjmp ev_limites
+
+; filtrado de ruido
+delay_anti_rebo: 
+	ldi r24, 20
+anti_rebo_1:
+	ldi r25, 20
+anti_rebo_2:
+	sbiw r24, 1 ; resta 1 al valor de 16 bits 
+	brne anti_rebo_2
+	ret
