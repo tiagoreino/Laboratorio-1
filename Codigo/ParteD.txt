@@ -24,11 +24,11 @@ start:
 
 	; OpCode como entrada
 	ldi OpCode, 0b00000000
-	out DDRC, OpCode
+	out DDRB, OpCode
 
 	; Pull-up internas
 	ldi OpCode, 0b00000111
-	out PORTC, OpCode
+	out PORTB, OpCode
 
 	; Resultados como salidas
 	ldi salidas, 0b00011111
@@ -40,6 +40,7 @@ start:
 
 	main_loop:
         in OpCode, PINB
+		com OpCode
 		andi OpCode, 0b00000111
 
 		cpi OpCode, 0b00000000
@@ -76,6 +77,7 @@ start:
 		out PORTG, flags
 
 		in OpCode, PINB
+		com OpCode
 		andi OpCode, 0b00000111
 		cpi OpCode, 0b00000000
 		brne main_loop
@@ -100,6 +102,7 @@ start:
 		rcall seleccion
 
 		in OpCode, PINB
+		com OpCode
 		andi OpCode, 0b00000111
 		cpi OpCode, 0b00000001
 		brne main_loop
@@ -128,6 +131,7 @@ rjmp aumen
 		rcall seleccion
 
 		in OpCode, PINB
+		com OpCode
 		andi OpCode, 0b00000111
 		cpi OpCode, 0b00000010
 		brne salto
@@ -147,6 +151,7 @@ rjmp aumen
 		rcall seleccion
 
 		in OpCode, PINB
+		com OpCode
 		andi OpCode, 0b00000111
 		cpi OpCode, 0b00000011
 		brne salto
@@ -167,6 +172,7 @@ rjmp aumen
 		rcall seleccion
 
 		in OpCode, PINB
+		com OpCode
 		andi OpCode, 0b00000111
 		cpi OpCode, 0b00000100
 		brne salto
@@ -189,6 +195,7 @@ rjmp main_loop
 		rcall seleccion
 
 		in OpCode, PINB
+		com OpCode
 		andi OpCode, 0b00000111
 		cpi OpCode, 0b00000101
 		brne salto
@@ -207,6 +214,7 @@ rjmp main_loop
 		rcall seleccion
 
 		in OpCode, PINB
+		com OpCode
 		andi OpCode, 0b00000111
 		cpi OpCode, 0b00000110
 		brne salto
@@ -225,6 +233,7 @@ rjmp main_loop
 		rcall seleccion
 
 		in OpCode, PINB
+		com OpCode
 		andi OpCode, 0b00000111
 		cpi OpCode, 0b00000111
 		brne salto
@@ -233,6 +242,7 @@ rjmp main_loop
 
     seleccion:
 			in multi, PINA
+			com multi
 			sbrs multi, 4        
 			rjmp num_B
 			andi multi, 0b00001111
